@@ -15,11 +15,12 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 app.use(bodyParser.json());
 
 app.get("/api/transactions", (req, res) => {
-  const userId = 1; // This should be fetched from a session or token in a real application
+  // temporarily hardcoding the user id
+  const userId = 1;
 
   const query = `
         SELECT t.transaction_id, t.transaction_type, t.transaction_amount, t.transaction_date,
@@ -44,7 +45,8 @@ app.get("/api/transactions", (req, res) => {
 
 app.post("/api/transactions", (req, res) => {
   const { transactionType, category, amount } = req.body;
-  const userId = 1; // This should be fetched from a session or token in a real application
+  // temporarily hardcoding the user id
+  const userId = 1;
 
   const tableName =
     transactionType === "expense" ? "expense_categories" : "income_categories";
