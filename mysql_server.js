@@ -44,29 +44,36 @@ app.get("/api/transactions", (req, res) => {
 });
 
 app.post("/api/transactions", (req, res) => {
-  const { transactionType, category, amount } = req.body;
-  // temporarily hardcoding the user id
-  const userId = 1;
+  const { userId, transactionType, category, amount, transactionDate } =
+    req.body;
+  console.log("Request body:", req.body);
 
   const tableName =
-    transactionType === "expense" ? "expense_categories" : "income_categories";
+    transactionType.toLowerCase() === "expense"
+      ? "expense_categories"
+      : "income_categories";
   const queryFindCategory = `SELECT category_id FROM ${tableName} WHERE category_name = ?`;
+  // temp logging
+  console.log("Query:", queryFindCategory);
 
   pool.query(queryFindCategory, [category], (error, results) => {
-    if (error || results.length === 0) {
+    if (error) {
       console.error(error);
-      return res.status(500).send("Error retrieving category");
+      return res.status(500).send("Error executing query");
+    }
+    if (results.length === 0) {
+      return res.status(400).send("Category not found");
     }
 
     const categoryId = results[0].category_id;
     const queryInsert = `
             INSERT INTO transactions (user_id, transaction_type, category_id, transaction_amount, transaction_date)
-            VALUES (?, ?, ?, ?, CURDATE())
+            VALUES (?, ?, ?, ?, ?)
         `;
 
     pool.query(
       queryInsert,
-      [userId, transactionType, categoryId, amount],
+      [userId, transactionType, categoryId, amount, transactionDate],
       (error) => {
         if (error) {
           console.error(error);
