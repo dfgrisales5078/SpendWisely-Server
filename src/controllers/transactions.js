@@ -1,24 +1,6 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const mysql = require("mysql");
+const pool = require("../config/db");
 
-const app = express();
-const PORT = 4000;
-const pool = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "expense_tracker",
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
-
-app.use(cors());
-app.use(bodyParser.json());
-
-app.get("/api/transactions", (req, res) => {
+exports.getTransactions = (req, res) => {
   // temporarily hardcoding the user id
   const userId = 1;
 
@@ -41,20 +23,17 @@ app.get("/api/transactions", (req, res) => {
     }
     res.send(results);
   });
-});
+};
 
-app.post("/api/transactions", (req, res) => {
+exports.addTransaction = (req, res) => {
   const { userId, transactionType, category, amount, transactionDate } =
     req.body;
-  console.log("Request body:", req.body);
 
   const tableName =
     transactionType.toLowerCase() === "expense"
       ? "expense_categories"
       : "income_categories";
   const queryFindCategory = `SELECT category_id FROM ${tableName} WHERE category_name = ?`;
-  // temp logging
-  console.log("Query:", queryFindCategory);
 
   pool.query(queryFindCategory, [category], (error, results) => {
     if (error) {
@@ -83,9 +62,9 @@ app.post("/api/transactions", (req, res) => {
       }
     );
   });
-});
+};
 
-app.delete("/api/transactions/:id", (req, res) => {
+exports.deleteTransaction = (req, res) => {
   const transactionId = req.params.id;
 
   const query = `DELETE FROM transactions WHERE transaction_id = ?`;
@@ -97,8 +76,4 @@ app.delete("/api/transactions/:id", (req, res) => {
     }
     res.send({ message: "Transaction deleted successfully" });
   });
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+};
