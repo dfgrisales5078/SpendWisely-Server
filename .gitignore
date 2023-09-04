@@ -1,0 +1,4 @@
+# Environment variables
+.env
+db.js
+node_modules/

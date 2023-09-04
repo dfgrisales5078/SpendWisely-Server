@@ -1,3 +1,4 @@
+require("dotenv").config({ path: "../.env" });
 const express = require("express");
 const applyMiddlewares = require("./middlewares");
 const transactionRoutes = require("./routes/transactionsRoutes");

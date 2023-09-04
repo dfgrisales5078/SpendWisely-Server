@@ -1,22 +1,32 @@
+const bcrypt = require("bcrypt");
 const pool = require("../config/db");
 
-exports.loginUser = (req, res) => {
+exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   const query = "SELECT * FROM users WHERE email = ?";
-  pool.query(query, [email], (error, results) => {
+  pool.query(query, [email], async (error, results) => {
     if (error) {
       console.error(error);
       return res.status(500).send("Error querying the database");
     }
 
-    // TODO - use a library to compare the password with the hashed password
-    if (results.length === 0 || results[0].password_hash !== password) {
-      console.log(results);
+    if (results.length === 0) {
       return res.status(401).send({ message: "Invalid email or password" });
     }
 
-    // TODO - use a library to generate a JWT token
-    res.send({ message: "Logged in successfully" });
+    try {
+      const user = results[0];
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+
+      if (!isMatch) {
+        return res.status(401).send({ message: "Invalid email or password" });
+      }
+
+      res.send({ message: "Logged in successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error verifying password");
+    }
   });
 };
