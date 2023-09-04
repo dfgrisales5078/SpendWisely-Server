@@ -5,11 +5,12 @@ exports.getTransactions = (req, res) => {
   const userId = 1;
 
   const query = `
-        SELECT t.transaction_id, t.transaction_type, t.transaction_amount, t.transaction_date,
+        SELECT t.transaction_id, t.transaction_type, t.transaction_amount, t.transaction_date, t.timestamp, 
         c.category_name
         FROM transactions t
         LEFT JOIN categories c ON t.category_id = c.category_id
         WHERE t.user_id = ? AND t.transaction_type = c.category_type
+        ORDER BY t.timestamp DESC
     `;
 
   pool.query(query, [userId], (error, results) => {
@@ -41,9 +42,9 @@ exports.addTransaction = (req, res) => {
 
       const categoryId = results[0].category_id;
       const queryInsert = `
-            INSERT INTO transactions (user_id, transaction_type, category_id, transaction_amount, transaction_date)
-            VALUES (?, ?, ?, ?, ?)
-        `;
+          INSERT INTO transactions (user_id, transaction_type, category_id, transaction_amount, transaction_date, timestamp)
+          VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `;
 
       pool.query(
         queryInsert,
