@@ -1,8 +1,11 @@
 const pool = require("../config/db");
 
 exports.getTransactions = (req, res) => {
-  // temporarily hardcoding the user id
-  const userId = 1;
+  const userId = req.query.userId;
+
+  if (!userId) {
+    return res.status(400).send("User ID is required");
+  }
 
   const query = `
         SELECT t.transaction_id, t.transaction_type, t.transaction_amount, t.transaction_date, t.timestamp, 
