@@ -23,7 +23,11 @@ exports.loginUser = async (req, res) => {
         return res.status(401).send({ message: "Invalid email or password" });
       }
 
-      res.send({ message: "Logged in successfully", user_id: user.user_id });
+      res.send({
+        message: "Logged in successfully",
+        user_id: user.user_id,
+        name: user.name,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).send("Error verifying password");
