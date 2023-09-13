@@ -12,6 +12,7 @@ exports.loginUser = async (req, res) => {
     }
 
     if (results.length === 0) {
+      console.log("Invalid email or password");
       return res.status(401).send({ message: "Invalid email or password" });
     }
 
@@ -20,9 +21,11 @@ exports.loginUser = async (req, res) => {
       const isMatch = await bcrypt.compare(password, user.password_hash);
 
       if (!isMatch) {
+        console.log("Invalid email or password");
         return res.status(401).send({ message: "Invalid email or password" });
       }
 
+      console.log(`User ${user.name} logged in successfully`);
       res.send({
         message: "Logged in successfully",
         user_id: user.user_id,

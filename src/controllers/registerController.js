@@ -13,6 +13,7 @@ const registerUser = async (req, res) => {
       }
 
       if (results.length > 0) {
+        console.log("An account with this email already exists");
         return res
           .status(400)
           .send("An account with this email already exists");
@@ -33,6 +34,7 @@ const registerUser = async (req, res) => {
             console.error(error);
             return res.status(500).send("Error registering user");
           }
+          console.log(`User ${name} registered successfully`);
           res.json({ message: "User registered successfully" });
         }
       );

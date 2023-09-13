@@ -21,6 +21,7 @@ exports.getTransactions = (req, res) => {
       console.error(error);
       return res.status(500).send("Error retrieving transactions");
     }
+    console.log(`Transactions retrieved successfully for user ${userId}`);
     res.send(results);
   });
 };
@@ -57,6 +58,9 @@ exports.addTransaction = (req, res) => {
             console.error(error);
             return res.status(500).send("Error inserting transaction");
           }
+          console.log(
+            `Succesfully added: transaction_type: ${transactionType}, amount: $${amount}`
+          );
           res.send({ message: "Transaction added successfully" });
         }
       );
@@ -74,6 +78,7 @@ exports.deleteTransaction = (req, res) => {
       console.error(error);
       return res.status(500).send("Error deleting transaction");
     }
+    console.log(`Successfully deleted transaction: ${transactionId}`);
     res.send({ message: "Transaction deleted successfully" });
   });
 };
