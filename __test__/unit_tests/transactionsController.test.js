@@ -43,7 +43,7 @@ describe("Transactions Controller", () => {
     ]);
   });
 
-  // Test case - Failure tos get transactions
+  // Test case - Failure to get transactions
   it("Fail to get transactions - missing user_id", async () => {
     const response = await supertest(app).get("/transactions").expect(400);
 
