@@ -8,4 +8,4 @@ The project consists of a website targeting college students as its users. It's 
 - MySQL
 
 ### Frontend Repository: 
-- https://github.com/dfgrisales5078/SpendWisely/tree/mainline
+- https://github.com/dfgrisales5078/SpendWisely
