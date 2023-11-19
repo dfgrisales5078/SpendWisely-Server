@@ -13,6 +13,10 @@ app.use(transactionRoutes);
 app.use(authenticationRoutes);
 app.use(registerRoutes);
 
+// comment to run unit tests
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
+
+// uncomment to run unit tests
+exports.app = app;
