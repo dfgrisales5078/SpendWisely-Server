@@ -1,11 +1,11 @@
 const bcrypt = require("bcrypt");
-const pool = require("../config/db");
+const db = require("../config/db");
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   const query = "SELECT * FROM users WHERE email = ?";
-  pool.query(query, [email], async (error, results) => {
+  db.query(query, [email], async (error, results) => {
     if (error) {
       console.error(error);
       return res.status(500).send("Error querying the database");

@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+const db = require("../config/db");
 
 exports.getTransactions = (req, res) => {
   const userId = req.query.userId;
@@ -16,7 +16,7 @@ exports.getTransactions = (req, res) => {
         ORDER BY t.timestamp DESC
     `;
 
-  pool.query(query, [userId], (error, results) => {
+  db.query(query, [userId], (error, results) => {
     if (error) {
       console.error(error);
       return res.status(500).send("Error retrieving transactions");
@@ -32,40 +32,36 @@ exports.addTransaction = (req, res) => {
 
   const queryFindCategory = `SELECT category_id FROM categories WHERE category_name = ? AND category_type = ?`;
 
-  pool.query(
-    queryFindCategory,
-    [category, transactionType],
-    (error, results) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).send("Error executing query");
-      }
-      if (results.length === 0) {
-        return res.status(400).send("Category not found");
-      }
+  db.query(queryFindCategory, [category, transactionType], (error, results) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).send("Error executing query");
+    }
+    if (results.length === 0) {
+      return res.status(400).send("Category not found");
+    }
 
-      const categoryId = results[0].category_id;
-      const queryInsert = `
+    const categoryId = results[0].category_id;
+    const queryInsert = `
           INSERT INTO transactions (user_id, transaction_type, category_id, transaction_amount, transaction_date, timestamp)
           VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
       `;
 
-      pool.query(
-        queryInsert,
-        [userId, transactionType, categoryId, amount, transactionDate],
-        (error) => {
-          if (error) {
-            console.error(error);
-            return res.status(500).send("Error inserting transaction");
-          }
-          console.log(
-            `Succesfully added: transaction_type: ${transactionType}, amount: $${amount}`
-          );
-          res.send({ message: "Transaction added successfully" });
+    db.query(
+      queryInsert,
+      [userId, transactionType, categoryId, amount, transactionDate],
+      (error) => {
+        if (error) {
+          console.error(error);
+          return res.status(500).send("Error inserting transaction");
         }
-      );
-    }
-  );
+        console.log(
+          `Succesfully added: transaction_type: ${transactionType}, amount: $${amount}`
+        );
+        res.send({ message: "Transaction added successfully" });
+      }
+    );
+  });
 };
 
 exports.deleteTransaction = (req, res) => {
@@ -73,7 +69,7 @@ exports.deleteTransaction = (req, res) => {
 
   const query = `DELETE FROM transactions WHERE transaction_id = ?`;
 
-  pool.query(query, [transactionId], (error) => {
+  db.query(query, [transactionId], (error) => {
     if (error) {
       console.error(error);
       return res.status(500).send("Error deleting transaction");
